@@ -1,36 +1,50 @@
 # Generate a GitHub Actions CI workflow for a Java Maven project
 # Should build the project, run tests, and work with JDK 17
 name: Java CI with Maven
+
 on:
   push:
-    branches: [ main ]
+    branches: [ dev, qa, main ]
   pull_request:
-    branches: [ main ]
+    branches: [ dev, qa, main ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    # Dynamically select environment based on branch
+    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || github.ref == 'refs/heads/qa' && 'qa' || 'dev' }}
+
     strategy:
       matrix:
         java-version: [17]
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up JDK ${{ matrix.java-version }}
-      uses: actions/setup-java@v3
-      with:
-        java-version: ${{ matrix.java-version }}
-        distribution: 'temurin'
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: temurin
 
-    - name: Cache Maven packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-maven-
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
 
-    - name: Build with Maven
-      run: mvn -B clean install --file pom.xml
-    - name: Run tests
-      run: mvn test
+      - name: Build with Maven
+        run: mvn -B clean install --file pom.xml
+
+      - name: Run tests
+        run: mvn test
+
+      - name: Use environment secret
+        run: echo "Environment secret is available"
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+
     
