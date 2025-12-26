@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || github.ref == 'refs/heads/qa' && 'qa' || 'dev' }}
 
     strategy:
       matrix:
@@ -40,8 +40,8 @@ jobs:
       - name: Run tests
         run: mvn test
 
-      - name: Use DEV environment secret
-        run: echo "Dev secret is available"
+      - name: Use environment secret
+        run: echo "Secret is available"
         env:
           API_KEY: ${{ secrets.API_KEY }}
 
