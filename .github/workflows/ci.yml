@@ -33,4 +33,8 @@ jobs:
       run: mvn -B clean install --file pom.xml
     - name: Run tests
       run: mvn test
+    - name: Use secret from GitHub
+      run: echo "Secret is available"
+      env:
+        DEMO_API_KEY: ${{ secrets.DEMO_API_KEY }}
     
