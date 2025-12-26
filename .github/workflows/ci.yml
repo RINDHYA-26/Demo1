@@ -1,14 +1,18 @@
 # Generate a GitHub Actions CI workflow for a Java Maven project
 # Should build the project, run tests, and work with JDK 17
 name: Java CI with Maven
+
 on:
   push:
-    branches: [ main ]
+    branches: [ dev, qa, main ]
   pull_request:
-    branches: [ main ]
+    branches: [ dev, qa, main ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    # Dynamically select environment based on branch
     environment: ${{ github.ref == 'refs/heads/main' && 'prod' || github.ref == 'refs/heads/qa' && 'qa' || 'dev' }}
 
     strategy:
@@ -39,10 +43,8 @@ jobs:
         run: mvn test
 
       - name: Use environment secret
-        run: echo "Secret is available"
+        run: echo "Environment secret is available"
         env:
           API_KEY: ${{ secrets.API_KEY }}
-
-      
 
     
