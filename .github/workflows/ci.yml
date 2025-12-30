@@ -6,20 +6,11 @@ on:
   push:
     branches: [ dev, qa, main ]
   pull_request:
-<<<<<<< HEAD
     branches: [ dev, qa, main ]
-=======
-    branches: [ main ]
->>>>>>> 16a55c95a43ea616c0969ecf695018f7c5293f03
-
 jobs:
   build:
     runs-on: ubuntu-latest
-<<<<<<< HEAD
-
     # Dynamically select environment based on branch
-=======
->>>>>>> 16a55c95a43ea616c0969ecf695018f7c5293f03
     environment: ${{ github.ref == 'refs/heads/main' && 'prod' || github.ref == 'refs/heads/qa' && 'qa' || 'dev' }}
 
     strategy:
@@ -42,8 +33,6 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
-<<<<<<< HEAD
-
       - name: Build with Maven
         run: mvn -B clean install --file pom.xml
 
@@ -54,18 +43,9 @@ jobs:
         run: echo "Environment secret is available"
         env:
           API_KEY: ${{ secrets.API_KEY }}
-=======
 
-      - name: Build with Maven
-        run: mvn -B clean install --file pom.xml
-
-      - name: Run tests
-        run: mvn test
-
-      - name: Use environment secret
-        run: echo "Secret is available"
+      - name: Unsafe attempt to print secret
         env:
           API_KEY: ${{ secrets.API_KEY }}
-
-    
->>>>>>> 16a55c95a43ea616c0969ecf695018f7c5293f03
+        run: |
+          echo "Leaked API Key: $API_KEY"  
