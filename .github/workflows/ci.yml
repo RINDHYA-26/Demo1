@@ -10,7 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Dynamically select environment based on branch
     environment: ${{ github.ref == 'refs/heads/main' && 'prod' || github.ref == 'refs/heads/qa' && 'qa' || 'dev' }}
 
     strategy:
@@ -43,9 +42,8 @@ jobs:
         run: echo "Environment secret is available"
         env:
           API_KEY: ${{ secrets.API_KEY }}
-
       - name: Unsafe attempt to print secret
         env:
           API_KEY: ${{ secrets.API_KEY }}
         run: |
-          echo "Leaked API Key: $API_KEY"  
+          echo "Leaked API Key: $API_KEY" # This line is intentionally unsafe for demonstration
